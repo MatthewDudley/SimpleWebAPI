@@ -3,6 +3,7 @@ package main
 import (
 	"SimpleWebAPI/src/config"
 	"SimpleWebAPI/src/handler"
+	"SimpleWebAPI/src/model"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -15,27 +16,8 @@ var db *gorm.DB
 
 func main() {
 
-	router := gin.Default()
-
-	router.GET("/", handler.PingGet())
-
-	// users := router.Group("/api/users")
-	// {
-	// 	//users.GET("/", handler.UsersGet())
-	// 	//users.POST("/", createTodo)
-	// 	//users.GET("/:id", fetchSingleTodo)
-	// 	//users.PUT("/:id", updateTodo)
-	// 	//users.DELETE("/:id", deleteTodo)
-	// }
-
-	// * listen and serve on 0.0.0.0:8080 - default
-	router.Run()
-}
-
-func init() {
-
 	// * declearing here to user later
-	var err error
+	var errr error
 
 	// * allocate a DBConfig struct called configuration
 	var configuration config.DBConfiguration
@@ -52,9 +34,9 @@ func init() {
 	} */
 
 	// * read config files using gonfig and store them in the configuration struct
-	err = gonfig.GetConf("./api/config/config.dev.json", &configuration)
-	if err != nil {
-		panic(err)
+	errr = gonfig.GetConf("./src/config/config.dev.json", &configuration)
+	if errr != nil {
+		panic(errr)
 	} else {
 		fmt.Println("Successfully read configuration file...")
 	}
@@ -77,10 +59,28 @@ func init() {
 	connectionString := configuration.DBUser + ":" + configuration.DBPassword + "@/" + configuration.DBName
 
 	// * open db connection using gorm
-	db, err = gorm.Open("mysql", connectionString)
+	db, err := gorm.Open("mysql", connectionString)
 	if err != nil {
 		panic(err)
 	} else {
 		fmt.Println("Successfully connected to db...")
 	}
+
+	//Migrate the schema
+	db.AutoMigrate(&model.User{})
+
+	router := gin.Default()
+
+	v1 := router.Group("/v1")
+	{
+		v1.GET("/", handler.PingGet())
+		//v1.GET("/users", handler.UsersGet())
+		v1.POST("/users", handler.UserPost(db))
+		// v1.GET("/users/:id", fetchSingleTodo)
+		// v1.PUT("/users/:id", updateTodo)
+		// v1.DELETE("/users/:id", deleteTodo)
+	}
+
+	// * listen and serve on 0.0.0.0:8080 - default
+	router.Run()
 }
