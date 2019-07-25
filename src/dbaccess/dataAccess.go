@@ -1,5 +1,7 @@
 package dbaccess
 
+// TODO abstract out - "./src/config/config.dev.json" line 35; "mysql" line 60
+
 import (
 	"SimpleWebAPI/src/config"
 	"SimpleWebAPI/src/model"
@@ -70,7 +72,7 @@ func InitializeDB() *gorm.DB {
 	return db
 }
 
-// InsertUser params: user model.User
+// InsertUser params: user model.User, db *gorm.DB
 func InsertUser(user *model.User, db *gorm.DB) {
 	// * save the user to the db using gorm
 	db.Save(&user)
