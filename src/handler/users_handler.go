@@ -11,11 +11,22 @@ import (
 )
 
 // UsersGet function
-func UsersGet() gin.HandlerFunc {
+func UsersGet(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, map[string]string{
-			"GET": "Users",
-		})
+		// * array of users from the model
+		var users []model.User
+
+		// * get users with find command
+		db.Find(&users)
+		if len(users) <= 0 {
+			c.JSON(http.StatusNotFound, gin.H{
+				"status":  http.StatusNotFound,
+				"message": "No user found!"})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"status": http.StatusOK,
+				"data":   users})
+		}
 	}
 }
 

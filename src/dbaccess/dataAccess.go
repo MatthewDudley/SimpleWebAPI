@@ -1,10 +1,12 @@
 package dbaccess
 
 // TODO abstract out - "./src/config/config.dev.json" line 35; "mysql" line 60
+// TODO use standard lib for db instead of gorm
 
 import (
 	"SimpleWebAPI/src/config"
 	"SimpleWebAPI/src/model"
+	"database/sql"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
@@ -76,4 +78,9 @@ func InitializeDB() *gorm.DB {
 func InsertUser(user *model.User, db *gorm.DB) {
 	// * save the user to the db using gorm
 	db.Save(&user)
+}
+
+// GetUsers params: user array and db ref
+func GetUsers(user []model.User, db *sql.DB) {
+	// * select all users and return back in users array
 }
