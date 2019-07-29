@@ -3,6 +3,7 @@ package handler
 import (
 	"SimpleWebAPI/src/dbaccess"
 	"SimpleWebAPI/src/model"
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -31,15 +32,19 @@ func UsersGet(db *gorm.DB) gin.HandlerFunc {
 }
 
 // UserPost - post a User with a given 'name' - string and 'age' - int to the db
-func UserPost(db *gorm.DB) gin.HandlerFunc {
+func UserPost(db *sql.DB) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		// * convert age from a string to int
 		age, _ := strconv.Atoi(c.PostForm("age"))
 		// * set the new user
-		user := model.User{Name: c.PostForm("name"), Age: age}
+		user := model.User{
+			Name: c.PostForm("name"),
+			Age:  age}
 		// * call da with the user model to insert
-		dbaccess.InsertUser(&user, db)
+		dbaccess.InsertUser(c, &user, db)
+
+		// ! if return from dbaccess.InsertUser == nil
 		// * return to user it was successfull
 		c.JSON(http.StatusCreated, gin.H{
 			"status":  http.StatusCreated,

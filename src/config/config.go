@@ -1,6 +1,7 @@
 package config
 
-type DBConfiguration struct {
+// Configuration struct to hold DB properties
+type Configuration struct {
 	DBName     string
 	DBUser     string
 	DBPassword string

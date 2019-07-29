@@ -3,12 +3,12 @@ package main
 import (
 	"SimpleWebAPI/src/dbaccess"
 	"SimpleWebAPI/src/handler"
+	"database/sql"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
-var db *gorm.DB
+var db *sql.DB
 
 func main() {
 
@@ -20,7 +20,7 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.GET("/", handler.PingGet())
-		v1.GET("/users", handler.UsersGet(db))
+		//v1.GET("/users", handler.UsersGet(db))
 		v1.POST("/users", handler.UserPost(db))
 		// v1.GET("/users/:id", fetchSingleTodo)
 		// v1.PUT("/users/:id", updateTodo)

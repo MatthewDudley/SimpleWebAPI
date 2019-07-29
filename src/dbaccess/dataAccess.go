@@ -1,86 +1,81 @@
 package dbaccess
 
-// TODO abstract out - "./src/config/config.dev.json" line 35; "mysql" line 60
-// TODO use standard lib for db instead of gorm
-
 import (
 	"SimpleWebAPI/src/config"
 	"SimpleWebAPI/src/model"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"os"
 
-	"github.com/jinzhu/gorm"
+	"github.com/gin-gonic/gin"
+
 	// need in da file
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/tkanos/gonfig"
 )
 
-// InitializeDB makes the db connection
-func InitializeDB() *gorm.DB {
-	// * variables used
-	var errr error
-	var db *gorm.DB
+// InitializeDB makes the db connection | params: none | return: *sql.DB
+func InitializeDB() *sql.DB {
+	// * complete
 
-	// * allocate a DBConfig struct called configuration
-	var configuration config.DBConfiguration
+	// * variables
+	const fileName string = "dataAccess.go"
+	const configFilePath string = "./src/config/config.dev.json"
+	var err error
+	var db *sql.DB
+	var conf config.Configuration // * allocate a DBConfig struct called configuration
 
-	// * either read config files manually or use Gonfig below
-	/* file, err := os.Open("./api/config/config.dev.json")
+	// * open and read config file into the conf struct
+	configFile, err := os.Open(configFilePath)
 	if err != nil {
 		panic(err)
 	}
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&configuration)
+	decoder := json.NewDecoder(configFile)
+	err = decoder.Decode(&conf)
 	if err != nil {
 		panic(err)
-	} */
-
-	// * read config files using gonfig and store them in the configuration struct
-	errr = gonfig.GetConf("./src/config/config.dev.json", &configuration)
-	if errr != nil {
-		panic(errr)
-	} else {
-		fmt.Println("Successfully read configuration file...")
 	}
+	fmt.Printf("%s - Config file successfully read..", fileName)
 
-	/*
-				config.dev.json
+	// * could read config files using gonfig
+	// errr = gonfig.GetConf(config.ConfigPath, &config)
+	// if errr != nil {
+	// 	panic(errr)
+	// } else {
+	// 	fmt.Println("Successfully read configuration file...")
+	// }
 
-		PATH: api/config/config.dev.json
-
-		CONTENTS:
-		{
-			"dbname": "[DB NAME]",
-			"dbuser": "[USERNAME]",
-			"dbpassword": "[PASSWORD]"
-		}
-
-	*/
 	// * build connection string from config.dev.json that was put into configuration struct above
 	// * config.dev.json format is above
-	connectionString := configuration.DBUser + ":" + configuration.DBPassword + "@/" + configuration.DBName
+	connectionString := conf.DBUser + ":" + conf.DBPassword + "@/" + conf.DBName
 
-	// * open db connection using gorm
-	db, err := gorm.Open("mysql", connectionString)
+	// * open db connection
+	db, err = sql.Open("mysql", connectionString)
 	if err != nil {
 		panic(err)
-	} else {
-		fmt.Println("Successfully connected to db...")
 	}
-
-	//Migrate the schema
-	db.AutoMigrate(&model.User{})
-
+	// * ping db to see if you have an established connection
+	err = db.Ping()
+	if err != nil {
+		fmt.Printf("%s - Ping failed... Could not establish connection - line 72", fileName)
+	}
+	fmt.Printf("%s - Ping Successfull... established connection to db", fileName)
 	return db
 }
 
-// InsertUser params: user model.User, db *gorm.DB
-func InsertUser(user *model.User, db *gorm.DB) {
-	// * save the user to the db using gorm
-	db.Save(&user)
+// InsertUser params: model.User, *sql.DB | return: error
+func InsertUser(c *gin.Context, user *model.User, db *sql.DB) error {
+	// TODO complete db work to save the passed in user struct
+
+	// * save the user to the db
+
+	return nil
 }
 
 // GetUsers params: user array and db ref
-func GetUsers(user []model.User, db *sql.DB) {
+func GetUsers(user []model.User, db *sql.DB) error {
+	// TODO complete db work to get all users
 	// * select all users and return back in users array
+
+	return nil
 }
