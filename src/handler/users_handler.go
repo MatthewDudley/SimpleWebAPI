@@ -4,7 +4,6 @@ import (
 	"SimpleWebAPI/src/dbaccess"
 	"SimpleWebAPI/src/model"
 	"database/sql"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -46,9 +45,6 @@ func UserPost(db *sql.DB) gin.HandlerFunc {
 			Age:  age}
 		// * call da with the user model to insert
 		rtn := dbaccess.InsertUser(&user, db)
-		if rtn == 0 {
-			log.Fatalf("User %s has ID of 0", user.Name)
-		}
 		// * return to user it was successfull
 		c.JSON(http.StatusCreated, gin.H{
 			"status":  http.StatusCreated,
