@@ -5,21 +5,20 @@ import (
 	"SimpleWebAPI/src/model"
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
-
-	"github.com/gin-gonic/gin"
 
 	// need in da file
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
+
+const fileName string = "dataAccess"
 
 // InitializeDB makes the db connection | params: none | return: *sql.DB
 func InitializeDB() *sql.DB {
 	// * complete
 
 	// * variables
-	const fileName string = "dataAccess.go"
 	const configFilePath string = "./src/config/config.dev.json"
 	var err error
 	var db *sql.DB
@@ -28,14 +27,14 @@ func InitializeDB() *sql.DB {
 	// * open and read config file into the conf struct
 	configFile, err := os.Open(configFilePath)
 	if err != nil {
-		panic(err)
+		log.Fatalf("%s - ERROR occured at os.Open(cofigFilePath) line 29: %s", fileName, err)
 	}
 	decoder := json.NewDecoder(configFile)
 	err = decoder.Decode(&conf)
 	if err != nil {
-		panic(err)
+		log.Fatalf("%s - ERROR occured at decoder.Decode(...) line 34: %s", fileName, err)
 	}
-	fmt.Printf("%s - Config file successfully read..", fileName)
+	log.Printf("%s - Config file successfully read...", fileName)
 
 	// * could read config files using gonfig
 	// errr = gonfig.GetConf(config.ConfigPath, &config)
@@ -52,24 +51,31 @@ func InitializeDB() *sql.DB {
 	// * open db connection
 	db, err = sql.Open("mysql", connectionString)
 	if err != nil {
-		panic(err)
+		log.Fatalf("%s - ERROR occured at os.Open('mysq', connectionString) line 52: %s", fileName, err)
 	}
 	// * ping db to see if you have an established connection
 	err = db.Ping()
 	if err != nil {
-		fmt.Printf("%s - Ping failed... Could not establish connection - line 72", fileName)
+		log.Printf("%s - ERROR db.Ping() line 72: %s", fileName, err)
 	}
-	fmt.Printf("%s - Ping Successfull... established connection to db", fileName)
+	log.Printf("%s - db.Ping() successful, established connection to db...", fileName)
 	return db
 }
 
-// InsertUser params: model.User, *sql.DB | return: error
-func InsertUser(c *gin.Context, user *model.User, db *sql.DB) error {
-	// TODO complete db work to save the passed in user struct
-
+// InsertUser params: model.User, *sql.DB | return: id int
+func InsertUser(user *model.User, db *sql.DB) int64 {
 	// * save the user to the db
-
-	return nil
+	stmt := `INSERT INTO users (name, age) VALUES (?, ?)`
+	res, err := db.Exec(stmt, user.Name, user.Age)
+	if err != nil {
+		log.Fatalf("%s - ERROR occured at db.Exec(...) line 69 %s", fileName, err)
+	}
+	// * get the last id inserted and store in id to return
+	id, err := res.LastInsertId()
+	if err != nil {
+		log.Fatalf("%s - ERROR occured at res.LastInsertID() line 74 %s", fileName, err)
+	}
+	return id
 }
 
 // GetUsers params: user array and db ref

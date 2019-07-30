@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const fileName string = "dataAccess"
+
 var db *sql.DB
 
 func main() {

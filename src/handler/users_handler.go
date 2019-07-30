@@ -4,12 +4,15 @@ import (
 	"SimpleWebAPI/src/dbaccess"
 	"SimpleWebAPI/src/model"
 	"database/sql"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
+
+const fileName string = "user_handler"
 
 // UsersGet function
 func UsersGet(db *gorm.DB) gin.HandlerFunc {
@@ -42,13 +45,14 @@ func UserPost(db *sql.DB) gin.HandlerFunc {
 			Name: c.PostForm("name"),
 			Age:  age}
 		// * call da with the user model to insert
-		dbaccess.InsertUser(c, &user, db)
-
-		// ! if return from dbaccess.InsertUser == nil
+		rtn := dbaccess.InsertUser(&user, db)
+		if rtn == 0 {
+			log.Fatalf("User %s has ID of 0", user.Name)
+		}
 		// * return to user it was successfull
 		c.JSON(http.StatusCreated, gin.H{
 			"status":  http.StatusCreated,
 			"message": "User successfully added!",
-			"userID":  user.ID})
+			"userID":  rtn})
 	}
 }
