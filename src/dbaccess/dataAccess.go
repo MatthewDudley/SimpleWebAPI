@@ -62,6 +62,38 @@ func InitializeDB() *sql.DB {
 	return db
 }
 
+// GetUsers params: user array and db ref | return: []model.User
+func GetUsers(db *sql.DB) []model.User {
+
+	// * define array of model.Users
+	var users []model.User
+
+	// * define sql statement
+	stmt := `SELECT * FROM USERS`
+
+	// * execute the query
+	rows, err := db.Query(stmt)
+	if err != nil {
+		log.Fatalf("%s - ERROR occured at db.Query(stmt) line 92 %s", fileName, err)
+	}
+
+	// * process result set
+	for rows.Next() {
+		var (
+			id   int
+			name string
+			age  int
+		)
+		if err := rows.Scan(&id, &name, &age); err != nil {
+			log.Fatalf("%s - ERROR occured at rows.Scan(&name, &age) line 103 %s", fileName, err)
+		}
+
+		// * store in users []model.Users
+		users = append(users, model.User{id, name, age})
+	}
+	return users
+}
+
 // InsertUser params: model.User, *sql.DB | return: id int
 func InsertUser(user *model.User, db *sql.DB) int64 {
 	// * save the user to the db
@@ -78,10 +110,34 @@ func InsertUser(user *model.User, db *sql.DB) int64 {
 	return id
 }
 
-// GetUsers params: user array and db ref
-func GetUsers(user []model.User, db *sql.DB) error {
-	// TODO complete db work to get all users
-	// * select all users and return back in users array
+// GetUserByID params: int , *sql.DB | return: user with given id
+func GetUserByID(id int, db *sql.DB) *model.User {
+	// * define user
+	var user *model.User
 
-	return nil
+	// * define sql statement with placeholder
+	stmt := `SELECT * FROM USERS WHERE USERS.ID = ?`
+
+	// * execute the query with id for the placeholder
+	rows, err := db.Query(stmt, id)
+	if err != nil {
+		log.Fatalf("%s - ERROR occured at db.Query(stmt) line 122 %s", fileName, err)
+	}
+
+	// * process result set
+	for rows.Next() {
+		var (
+			id   int
+			name string
+			age  int
+		)
+		if err := rows.Scan(&id, &name, &age); err != nil {
+			log.Fatalf("%s - ERROR occured at rows.Scan(&name, &age) line 134 %s", fileName, err)
+		}
+
+		// * store in users []model.Users
+		user = &model.User{id, name, age}
+	}
+	return user
+
 }

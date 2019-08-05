@@ -22,10 +22,10 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.GET("/", handler.PingGet())
-		//v1.GET("/users", handler.UsersGet(db))
+		v1.GET("/users", handler.UsersGet(db))
 		v1.POST("/users", handler.UserPost(db))
-		// v1.GET("/users/:id", fetchSingleTodo)
-		// v1.PUT("/users/:id", updateTodo)
+		v1.GET("/users/:id", handler.UserGet(db))
+		v1.PUT("/users/:id", handler.UserPut(db))
 		// v1.DELETE("/users/:id", deleteTodo)
 	}
 
