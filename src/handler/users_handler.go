@@ -84,7 +84,25 @@ func UserGet(db *sql.DB) gin.HandlerFunc {
 func UserPut(db *sql.DB) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
+		// * define user array
+		var user *model.User
 
+		// * get id from header
+		id, _ := strconv.Atoi(c.Param("id"))
+
+		// * pass id to da function to get the user
+		user = dbaccess.GetUserByID(id, db)
+
+		// * check user name if empty
+		if user == nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"status":  http.StatusNotFound,
+				"message": "No user found!"})
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"status": http.StatusOK,
+				"data":   &user})
+		}
 	}
 
 }
