@@ -1,5 +1,10 @@
+# Go
+# Build your Go application.
+# Add steps that test, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/vsts/pipelines/languages/go
+
 pool:
-  vmImage: 'macOS-10.13'
+  vmImage: 'Ubuntu 16.04'
 
 variables:
   GOBIN:  '$(GOPATH)/bin' # Go binaries path
