@@ -7,9 +7,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-
-	// need in da file
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 const fileName string = "dataAccess"
