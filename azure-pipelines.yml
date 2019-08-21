@@ -22,9 +22,11 @@ steps:
     echo '##vso[task.prependpath]$(GOBIN)'
     echo '##vso[task.prependpath]$(GOROOT)/bin'
   displayName: 'Set up the Go workspace'
+  
+- script: |
+    go get -u 'github.com/gin-gonic/gin'
+  displayName: 'Get Packages'
 
-- script:
-    go get -u github.com/gin-gonic/gin
-    go build -v .
+- script: go build -v .
   workingDirectory: '$(modulePath)'
   displayName: 'Build'
