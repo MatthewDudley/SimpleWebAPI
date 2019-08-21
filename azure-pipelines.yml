@@ -27,6 +27,6 @@ steps:
     go get -u 'github.com/gin-gonic/gin'
   displayName: 'Get Packages'
 
-- script: go build -v .
+- script: go build src/main.go .
   workingDirectory: '$(modulePath)'
   displayName: 'Build'
